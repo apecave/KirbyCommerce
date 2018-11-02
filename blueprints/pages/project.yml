@@ -1,0 +1,71 @@
+name: project
+title: Project
+
+tabs:
+
+	content:
+		label: Content
+		icon: text
+		columns:
+			- 2/3: content
+			- 1/3: images
+
+	seo:
+		label: SEO
+		icon: search
+		columns:
+			- 1/1: seo
+
+sections:
+
+	# the form for the page
+	content:
+		type: fields
+		fields:
+			headline:
+				label: Headline
+				type: text
+				required: true
+				minLength: 10
+				maxLength: 20
+				width: 3/4
+			year:
+				label: Year
+				type: number
+				min: 2000
+				required: true
+				width: 1/4
+			budget:
+				label: Budget
+				type: currency
+			link:
+				label: Link
+				type: url
+			tags:
+				label: Tags
+				type: tags
+			text:
+				label: Text
+				type: textarea
+				minLength: 10
+
+	# all images displayed as nice cards
+	images:
+		headline: Images
+		type: files
+		query: page.images
+		layout: list
+		min: 2
+		max: 3
+		accept: image/jpeg
+
+	# seo fields
+	seo:
+		type: fields
+		fields:
+			metaTitle:
+				label: Meta Title
+				type: text
+			metaDescription:
+				label: Meta Description
+				type: textarea

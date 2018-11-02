@@ -1,0 +1,26 @@
+{
+    "name": "starterkit/demo",
+    "description": "Starterkit Demo Plugin",
+    "version": "1.0.0",
+    "type": "kirby-plugin",
+    "license": "MIT",
+    "autoload": {
+        "files": ["config.php"],
+        "psr-4": {
+            "KirbyCommerce\\": "lib/",
+            "Starterkit\\Demo\\Fields\\": "fields/",
+            "Starterkit\\Demo\\Tags\\": "tags/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Bastian Allgeier",
+            "email": "bastian@getkirby.com"
+        }
+    ],
+    "require": {
+        "composer/installers": "~1.0",
+        "bigcommerce/api": "^3.2",
+        "guzzlehttp/guzzle": "~6.0"
+    }
+}
