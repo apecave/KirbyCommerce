@@ -3,33 +3,43 @@ panel.plugin('KirbyCommerce', {
     'kc-products-sync': {
       props: {
         message: String,
-        username: String,
-        sentence: String,
         progress: Number,
+        disabled: Boolean
       },
       data: function () {
         return {
-          message: this.message
+          message: this.message,
+          disabled: this.disabled,
         }
       },
     methods: {
-      plus: function () {
+      sync: function () {
         var self = this;
+        self.disabled = true;
         var xhr = new XMLHttpRequest()
         xhr.open("GET", "/api/products", true)
 
 
         xhr.onprogress = function () {
             var array = this.responseText.split(/\r?\n/).filter(Boolean) ;
-            var memoryLine = array[array.length - 2];
             var lastLineArray = array[array.length - 1].split(":");
-                var trimmedArray = lastLineArray.map(function(string){
-                    return string.trim();
-                });
+            var trimmedArray = lastLineArray.map(function(string){
+                return string.trim();
+            });
+            var progress = trimmedArray[0].replace("%", "");
+            var message = trimmedArray[1];
 
 
-            self.$refs.progress.set(trimmedArray[0].replace("%", ""));
-            self.message = trimmedArray[1];
+            self.$refs.progress.set(progress);
+
+            self.message = message;
+            self.disabled = Boolean(progress) ? true : false;
+            if(progress == 100) {
+              setTimeout(function(){ 
+                self.$refs.progress.set(0); 
+                self.disabled = false;
+              }, 3000);
+            }
         }
         xhr.send()
 
@@ -39,13 +49,12 @@ panel.plugin('KirbyCommerce', {
     },
       template: `
         <div>
-          
-          <k-button v-on:click="plus">Add 1</k-button>
+          <k-button @click="sync" :disabled="disabled" icon="refresh">Sync All Products</k-button>
           <k-progress ref="progress" />
-          <k-text>
+          <k-text v-if="disabled">
             <i>{{message}}</i>
           </k-text>
-       </div>
+        </div>
       `
     }
   }

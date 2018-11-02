@@ -37,7 +37,6 @@ tabs:
         fields:
           kc-products-sync:
             type: kc-products-sync
-            message: Computer Says Whatever.
           metaTitle:
             label: Meta Title
             type: text

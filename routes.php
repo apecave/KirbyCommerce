@@ -52,13 +52,15 @@ return [
                   echo $e->getMessage();
 
                 }                
-                echo "{$string}%: Saving Product #{$productNum} \r\n";
+                echo "{$string}%: Saving Products\r\n";
                 flush();
                 ob_flush();
                 usleep(100000);
             }
 
-
+            echo "100%: Done\r\n";
+            flush();
+            ob_flush();
             
             return;
             
