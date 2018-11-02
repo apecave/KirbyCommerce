@@ -6,9 +6,8 @@ return [
         'action'  => function () {
             header( 'Transfer-Encoding: chunked; Content-type: text/html; charset=utf-8' );
             echo "<style>html {white-space:pre}</style>\r\n";
-            echo "5%: Initializing\r\n";
-            flush();
-            ob_flush();
+            emitFlush('5%: Initializing');
+
 
             $bcconfig = option('bcconfig');
             $client = new GuzzleHttp\Client([
@@ -30,15 +29,13 @@ return [
             $weightedTotal = $total + $initialWeight; 
             $initalPercent = round($initialWeight/$weightedTotal * 100);
 
-            echo "{$initalPercent}%: Initializing Complete\r\n";
-            flush();
-            ob_flush();
+            emitFlush($initalPercent.'%: Initializing Complete');
             sleep(1);
 
             for($i = 0; $i < $total; $i++){
                 $pageData = $array[$i];
                 $productNum = $i + 1;
-                $string =  round($productNum/$weightedTotal * 100 + $initalPercent);
+                $progress =  round($productNum/$weightedTotal * 100 + $initalPercent);
 
                 try {
                     kirby()->page('products')->createChild([
@@ -52,15 +49,12 @@ return [
                   echo $e->getMessage();
 
                 }                
-                echo "{$string}%: Saving Products\r\n";
-                flush();
-                ob_flush();
+
+                emitFlush($progress.'%: Saving Products');
                 usleep(100000);
             }
 
-            echo "100%: Done\r\n";
-            flush();
-            ob_flush();
+            emitFlush('100%: Done');
             
             return;
             
@@ -107,3 +101,12 @@ return [
         }
     ]
 ];
+
+function emitFlush($message = null){
+    if($message) {
+        echo $message."\r\n";
+    }
+
+    flush();
+    ob_flush();
+};
