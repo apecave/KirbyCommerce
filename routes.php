@@ -44,7 +44,7 @@ return [
                     'isDraft'  => false,
                     'template' => 'article'
                     ]);
-                }   catch(DuplicateException $e) {
+                }   catch(Exception $e) {
 
                   echo $e->getMessage();
 
@@ -57,46 +57,6 @@ return [
             emitFlush('100%: Done');
             
             return;
-            
-        }
-    ],
-    [
-        'pattern' => 'api/chunked',
-        'action'  => function () {
-            
-            header( 'Transfer-Encoding: chunked; Content-type: text/html; charset=utf-8' );
-            echo "<style>html {white-space:pre}</style>\r\n";
-            echo "0%: Initializing\r\n";
-            flush();
-            ob_flush();
-
-            $resource = KirbyCommerce\Products::get();
-            $total = count($resource);
-            $initialWeight = $total / 2;
-            $weightedTotal = $total + $initialWeight; 
-            $array = KirbyCommerce\Products::toArray($resource);
-            $initalPercent = round($initialWeight/$weightedTotal * 100);
-            $kirby = kirby();
-            
-            echo "{$initalPercent}%: Initializing Complete\r\n";
-            flush();
-            ob_flush();
-            sleep(1);
-
-            for($i = 0; $i < $total; $i++){
-                
-                $memory = convert(memory_get_usage());
-                $productNum = $i + 1;
-                $string =  round($productNum/$weightedTotal * 100 + $initalPercent);
-
-                KirbyCommerce\Product::save($array[$i], $kirby);
-                
-                // echo "Memory usage is {$memory}\r\n";
-                echo "{$string}%: Saving Product #{$productNum} \r\n";
-                flush();
-                ob_flush();
-                usleep(100000);
-            }
             
         }
     ]
