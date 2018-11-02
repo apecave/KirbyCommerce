@@ -1,0 +1,46 @@
+title: Products
+
+icon: 📜
+
+options:
+  url: false
+  status: false
+  delete: false
+
+tabs:
+
+  # Subpages tab with pages section
+  subpages:
+    label: Subpages
+    icon: page
+    preset: pages
+    
+    drafts:
+      extends: sections/articles
+      headline: Unpublished articles
+
+    unlisted:
+      extends: sections/articles
+      headline: Articles in review
+
+    listed:
+      extends: sections/articles
+      headline: Published articles
+  # Seo Tab with a fields section
+  seo:
+    label: Catalog Sync
+    icon: refresh
+    sections:
+      # seo fields
+      seo:
+        type: fields
+        fields:
+          kc-products-sync:
+            type: kc-products-sync
+            message: Computer Says Whatever.
+          metaTitle:
+            label: Meta Title
+            type: text
+          metaDescription:
+            label: Meta Description
+            type: textarea

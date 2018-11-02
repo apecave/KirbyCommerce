@@ -2,7 +2,7 @@
 
 return [
   [
-        'pattern' => 'api/guzzle',
+        'pattern' => 'api/products',
         'action'  => function () {
             header( 'Transfer-Encoding: chunked; Content-type: text/html; charset=utf-8' );
             echo "<style>html {white-space:pre}</style>\r\n";
@@ -41,7 +41,7 @@ return [
                 $string =  round($productNum/$weightedTotal * 100 + $initalPercent);
 
                 try {
-                    kirby()->page('blog')->createChild([
+                    kirby()->page('products')->createChild([
                     'content'  => $pageData,
                     'slug' => $pageData['custom_url']['url'].uniqid(),
                     'isDraft'  => false,
@@ -105,29 +105,3 @@ return [
         }
     ]
 ];
-
-/**
- * js to get each new line as it arrives
- */
-// var xhr = new XMLHttpRequest()
-// xhr.open("GET", "/api/chunked", true)
-
-
-// xhr.onprogress = function () {
-//     var array = this.responseText.split(/\r?\n/).filter(Boolean) ;
-//     var memoryLine = array[array.length - 2];
-//     var lastLineArray = array[array.length - 1].split(":");
-//         var trimmedArray = lastLineArray.map(function(string){
-//             return string.trim();
-//         });
-// //  var percent = lastLine[0];
-// //  var percent = lastLine[0];
-
-// //      console.log(memoryLine)
-//     console.log(trimmedArray)
-
-// }
-// xhr.send()
-
-// }
-// xhr.send()

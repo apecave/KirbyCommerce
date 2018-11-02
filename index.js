@@ -1,6 +1,6 @@
-panel.plugin('starterkit/demo', {
+panel.plugin('KirbyCommerce', {
   'fields': {
-    'whatever': {
+    'kc-products-sync': {
       props: {
         message: String,
         username: String,
@@ -16,7 +16,7 @@ panel.plugin('starterkit/demo', {
       plus: function () {
         var self = this;
         var xhr = new XMLHttpRequest()
-        xhr.open("GET", "/api/guzzle", true)
+        xhr.open("GET", "/api/products", true)
 
 
         xhr.onprogress = function () {

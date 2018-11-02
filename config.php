@@ -11,22 +11,13 @@
 Kirby::plugin('starterkit/demo', [
     'blueprints' => [
         'site'          => __DIR__ . '/blueprints/site.yml',
-        'pages/project' => __DIR__ . '/blueprints/pages/project.yml',
+        'pages/products' => __DIR__ . '/blueprints/pages/products.yml',
     ],
     'fieldMethods' => [
         'test' => function () {
             return 'test';
         }
     ],
-    'hooks' => [
-        'page.delete:before' => function () {
-            var_dump('yay');
-        }
-    ],
-    'options' => [
-        'foo' => 'bar'
-    ],
-
     'routes' => require_once __DIR__ . '/routes.php',
 
     'snippets' => [
@@ -39,7 +30,7 @@ Kirby::plugin('starterkit/demo', [
         'home' => __DIR__ . '/templates/home.php'
     ],
     'fields' => [
-      'whatever' => [
+      'kc-products-sync' => [
         'props' => [
             'message' => function (string $message) {
                 return $message;
