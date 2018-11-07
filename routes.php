@@ -1,5 +1,6 @@
 <?php
 use ApeCave\KirbyCommerce\Products;
+use ApeCave\KirbyCommerce\Categories;
 
 return [
   [
@@ -29,6 +30,44 @@ return [
                 $progress =  round($productNum/$weightedTotal * 100 + $initalPercent);
 
                 $site->syncProduct($content);
+
+                emitFlush($progress.'%: Saving Products');
+                usleep(100000);
+            }
+
+            emitFlush('100%: Done');
+            
+            return;
+            
+        }
+    ],
+[
+        'pattern' => 'api/categories',
+        'action'  => function () {
+            header( 'Transfer-Encoding: chunked; Content-type: text/html; charset=utf-8' );
+            echo "<style>html {white-space:pre}</style>\r\n";
+            emitFlush('5%: Initializing');
+
+            //get our products from bigcommerce
+            $categories = Categories::get(); 
+
+            //setup some progress weights
+            $total = count($categories);
+            $initialWeight = $total / 2;
+            $weightedTotal = $total + $initialWeight; 
+            $initalPercent = round($initialWeight/$weightedTotal * 100);
+
+            emitFlush($initalPercent.'%: Initializing Complete');
+            sleep(1);
+
+            //sync each category
+            $site = site();
+            for($i = 0; $i < $total; $i++){
+                $content = $categories[$i];
+                $productNum = $i + 1;
+                $progress =  round($productNum/$weightedTotal * 100 + $initalPercent);
+
+                $site->syncCategory($content);
 
                 emitFlush($progress.'%: Saving Products');
                 usleep(100000);

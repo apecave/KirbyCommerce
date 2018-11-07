@@ -62,6 +62,44 @@ Kirby::plugin('apecave/kirbycommerce', [
                     $ravenClient->captureException($e);
                   
                 }  
+        },
+        'syncCategory' => function ($content = null) use($ravenClient) {
+
+                $categoriesPage = $this->find('categories');
+                $allChildren = $categoriesPage->children()->merge($categoriesPage->drafts());
+                $page = null;
+
+                try {
+
+                    if ( $page = $allChildren->findBy('category_id',$content['category_id']) ) {
+                        $page->update($content);
+                        $newSlug = Str::slug($content['custom_url']['url']);
+                        $oldSlug = $page->slug();
+
+                        if($newSlug != $oldSlug) {
+                            $page->changeSlug($newSlug);
+                        }
+                    } else {
+                        $page = $categoriesPage->createChild([
+                          'content'  => $content,
+                          'slug' => $content['custom_url']['url'],
+                          'isDraft'  => false,
+                          'template' => 'category'
+                        ]);
+                    }
+
+                    //now that we have a page set the visibility to match bigcommerce
+                    $newStatus = (bool) $content['is_visible'] ? 'listed': 'draft' ;
+                    $oldStatus = $page->status(); 
+                    if($newStatus != $oldStatus) {
+                        $page->changeStatus($newStatus);
+                    }
+
+                }   catch(Exception $e) {
+
+                    $ravenClient->captureException($e);
+                  
+                }  
         }
     ],
 
