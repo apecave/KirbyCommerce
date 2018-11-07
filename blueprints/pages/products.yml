@@ -13,19 +13,26 @@ tabs:
   subpages:
     label: Subpages
     icon: page
-    preset: pages
-    
-    drafts:
-      extends: sections/articles
-      headline: Unpublished articles
+    # preset: pages
 
-    unlisted:
-      extends: sections/articles
-      headline: Articles in review
+    sections:
+      products:
+        headline: Products
+        type: pages
+        status: all
+        templates: product
 
-    listed:
-      extends: sections/articles
-      headline: Published articles
+    # drafts:
+    #   extends: sections/products
+    #   headline: Unpublished products
+
+    # unlisted:
+    #   extends: sections/products
+    #   headline: Products in review
+
+    # listed:
+    #   extends: sections/products
+    #   headline: Published products
   # Seo Tab with a fields section
   seo:
     label: Catalog Sync
@@ -36,7 +43,7 @@ tabs:
         type: fields
         fields:
           kc-products-sync:
-            type: kc-products-sync
+            type: products-sync
           metaTitle:
             label: Meta Title
             type: text

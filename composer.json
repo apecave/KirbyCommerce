@@ -1,26 +1,24 @@
 {
-    "name": "starterkit/demo",
-    "description": "Starterkit Demo Plugin",
+    "name": "apecave/kirbycommerce",
+    "description": "Kirby/BigCommerce Plugin",
     "version": "1.0.0",
     "type": "kirby-plugin",
     "license": "MIT",
     "autoload": {
         "files": ["config.php"],
         "psr-4": {
-            "KirbyCommerce\\": "lib/",
-            "Starterkit\\Demo\\Fields\\": "fields/",
-            "Starterkit\\Demo\\Tags\\": "tags/"
+            "ApeCave\\KirbyCommerce\\": "lib/"
         }
     },
     "authors": [
         {
-            "name": "Bastian Allgeier",
-            "email": "bastian@getkirby.com"
+            "name": "Paul Wagner",
+            "email": "paulw@foodchain.com"
         }
     ],
     "require": {
         "composer/installers": "~1.0",
-        "bigcommerce/api": "^3.2",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "sentry/sentry": "^1.9"
     }
 }

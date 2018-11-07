@@ -1,6 +1,6 @@
-panel.plugin('KirbyCommerce', {
+panel.plugin('apecave/kirbycommerce', {
   'fields': {
-    'kc-products-sync': {
+    'products-sync': {
       props: {
         message: String,
         progress: Number,

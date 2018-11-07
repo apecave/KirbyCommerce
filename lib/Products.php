@@ -1,40 +1,25 @@
 <?php
 
-namespace KirbyCommerce;
+namespace ApeCave\KirbyCommerce;
+
 
 
 class Products extends Resource
 {
-	public static $endpoint = "Products";
+	public static $requestParams = ['GET', 'catalog/products',['query' => ['include' => 'images']]] ;
 
-    /**
-     * [toArray description]
-     * @param  [type] $bcproducts [description]
-     * @return [type]             [description]
-     */
-    public static function toArray($bcproducts): array
+	/**
+	 * formats the array to play nicer with kirby reserved keys
+	 * thinks like keys the simply read ID can be remapped here
+	 * as kirby doesn't like them
+	 * @param  Array  $products the products array from bigcommerce api v3
+	 * @return Array            an array made nicer for kirby
+	 */
+	public static function kirbify($products): Array
     {
-   		$array = [];
-        foreach ($bcproducts as $key => $bcproduct) {
-        	$array[$key] = Product::toArray($bcproduct);
-        }
-
-        return $array;
-    }
-
-    /**
-     * [toArray description]
-     * @param  [type] $pagesData [description]
-     * @return [type]             [description]
-     */
-    public static function save($pagesData, $kirby): bool
-    {
-   		$array = [];
-
-        foreach ($pagesData as $key => $pageData) {
-        	Product::save($pageData, $kirby);
-        }
-
-        return false;
+    	foreach ($products as $key => $product) {
+    		$array[$key] = Product::kirbify($product);
+    	}
+        return  $array;
     }
 }

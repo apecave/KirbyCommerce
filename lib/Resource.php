@@ -1,68 +1,65 @@
 <?php
 
-namespace KirbyCommerce;
+namespace ApeCave\KirbyCommerce;
 
-use Bigcommerce\Api\Client as Bigcommerce;
-
-
-Bigcommerce::configure(option('bcconfig'));
+use GuzzleHttp\Client;
+use Kirby\Data\Json;
 
 
 abstract class Resource
 {
-	public static $endpoint = "null";
-	public static $kirby;
-
+	public static $requestParams = null;
 
 	/**
-	 * gets a resource endpoint
-	 * @return [type] [description]
-	 */
-    public static function get($args = null) : array
+     * gets a resource endpoint
+     * @param  Array $args request parameters overrides
+     * @return Array the resrouce as a php array
+     */
+    public static function get($args = null) : Array
     {
-    	$bc = new Bigcommerce;
-    	$method = 'get'.static::$endpoint;
-    	
-    	$resource = $bc->$method($args);
+        $bcconfig = option('bcconfig');
+        $client = new Client([
+            'base_uri' => 'http://api.bigcommerce.com/stores/'.$bcconfig['store_hash'].'/v3/',
+            'timeout'  => 2.0,
+            'headers' => [
+                'X-store_hash' => $bcconfig['store_hash'],
+                'X-Auth-Client' => $bcconfig['client_id'],
+                'X-Auth-Token' => $bcconfig['auth_token']
 
-    	// ensure return is array of given resources
-    	// even if its a singleton
-    	$array = is_array($resource) ? $resource : [$resource];
+            ]
+        ]);
+        $args = $args ?? static::$requestParams;
+        $response = $client->request(...$args); //splat the array to unpack args https://wiki.php.net/rfc/argument_unpacking
+        $json = $response->getBody()->getContents();
+        $resource = Json::decode( $json );
+        $resourceArray = $resource['data'];
+        $array = static::kirbify($resourceArray);
 
-        return  $array;
+        return $array;
+
     }
 
-    public static function put(): bool
+    public static function put(): Boolean   
     {
     	//foreach -> put logic
         return  false;
     }
 
     /**
-     * [save description]
-     * @param  [type] $pagesData [description]
-     * @return [type]            [description]
+     * changes a key in an array while keeping it in place
+     * @param  Array  $array   the array to be manipulated
+     * @param  String $old_key key to be replaced
+     * @param  String $new_key key to replace with
+     * @return Array           the new array with changed keys
      */
-    public abstract static function save($pagesData, $kirby);
+    public static function change_key( $array, $old_key, $new_key ) : Array {
 
-    /**
-     * [sync description]
-     * @return [type] [description]
-     */
-    public static function sync(): bool
-    {
-    	$resource = static::get();
-    	$array = static::toArray($resource);
-    	static::save($array);
+        if( ! array_key_exists( $old_key, $array ) )
+            return $array;
 
-        return  false;
+        $keys = array_keys( $array );
+        $keys[ array_search( $old_key, $keys ) ] = $new_key;
+
+        return array_combine( $keys, $array );
     }
-
-    /**
-     * [toArray description]
-     * @return [type] [description]
-     */
-    public abstract static function toArray($resource);
-
-
 }

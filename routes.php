@@ -1,4 +1,5 @@
 <?php
+use ApeCave\KirbyCommerce\Products;
 
 return [
   [
@@ -8,23 +9,11 @@ return [
             echo "<style>html {white-space:pre}</style>\r\n";
             emitFlush('5%: Initializing');
 
+            //get our products from bigcommerce
+            $products = Products::get(); 
 
-            $bcconfig = option('bcconfig');
-            $client = new GuzzleHttp\Client([
-                'base_uri' => 'http://api.bigcommerce.com/stores/'.$bcconfig['store_hash'].'/v3/',
-                'timeout'  => 2.0,
-                'headers' => [
-                    'X-store_hash' => $bcconfig['store_hash'],
-                    'X-Auth-Client' => $bcconfig['client_id'],
-                    'X-Auth-Token' => $bcconfig['auth_token']
-
-                ]
-            ]);
-            $response = $client->request('GET', 'catalog/products',['query' => ['include' => 'images']]);
-            $json = $response->getBody()->getContents();
-            $resource = Kirby\Data\Json::decode( $json );
-            $array = $resource['data'];
-            $total = count($array);
+            //setup some progress weights
+            $total = count($products);
             $initialWeight = $total / 2;
             $weightedTotal = $total + $initialWeight; 
             $initalPercent = round($initialWeight/$weightedTotal * 100);
@@ -32,23 +21,14 @@ return [
             emitFlush($initalPercent.'%: Initializing Complete');
             sleep(1);
 
+            //sync each product
+            $site = site();
             for($i = 0; $i < $total; $i++){
-                $pageData = $array[$i];
+                $content = $products[$i];
                 $productNum = $i + 1;
                 $progress =  round($productNum/$weightedTotal * 100 + $initalPercent);
 
-                try {
-                    kirby()->page('products')->createChild([
-                    'content'  => $pageData,
-                    'slug' => $pageData['custom_url']['url'].uniqid(),
-                    'isDraft'  => false,
-                    'template' => 'article'
-                    ]);
-                }   catch(Exception $e) {
-
-                  echo $e->getMessage();
-
-                }                
+                $site->syncProduct($content);
 
                 emitFlush($progress.'%: Saving Products');
                 usleep(100000);
@@ -62,11 +42,3 @@ return [
     ]
 ];
 
-function emitFlush($message = null){
-    if($message) {
-        echo $message."\r\n";
-    }
-
-    flush();
-    ob_flush();
-};
