@@ -17,6 +17,9 @@ class Category extends Resource
     public static function kirbify($category): Array
     {
             $array = static::change_key($category, 'id', 'category_id');
+            $path = parse_url($category['custom_url']['url'], PHP_URL_PATH);
+            $pathFragments = array_filter(explode('/', $path));
+            $array['slug'] = end($pathFragments);
     		return $array;
     }
 }
