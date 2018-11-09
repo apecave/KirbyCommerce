@@ -33,6 +33,11 @@ abstract class Resource
         $json = $response->getBody()->getContents();
         $resource = Json::decode( $json );
         $resourceArray = $resource['data'];
+
+        // if ($url = $resource['meta']['pagination']['links']['next'] ?? false) {
+        //      dump($resource); die;
+        // }
+       
         $array = static::kirbify($resourceArray);
 
         return $array;
