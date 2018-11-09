@@ -24,6 +24,23 @@ Kirby::plugin('apecave/kirbycommerce', [
         ]
       ]
     ],
+    'pageMethods' => [
+        'draftsIndex' => function () {
+            //get first layer of drafts
+            $drafts = $this->index()->drafts()->merge($this->drafts());
+
+           
+            $drafts = recursive($drafts);
+           
+            return $drafts ;
+
+        },
+        'trueIndex' => function () {
+            $trueIndex = $this->draftsIndex()->merge($this->index());
+            $trueIndex->sortBy('uri', 'asc');
+            return $trueIndex->sortBy('uri', 'asc');
+        },
+    ],
     'siteMethods' => [
         'syncProduct' => function ($content = null) use($ravenClient) {
 
@@ -64,31 +81,45 @@ Kirby::plugin('apecave/kirbycommerce', [
                 }  
         },
         'syncCategory' => function ($content = null) use($ravenClient) {
+                unset($content['children']); //just need the parent each time
+                $kirby = new Kirby();
 
-                $categoriesPage = $this->find('categories');
-                $allChildren = $categoriesPage->children()->merge($categoriesPage->drafts());
+
+
+                $categoriesPage = $kirby->site()->find('categories');
+                $allChildren = $categoriesPage->trueIndex();
+                // dump($allChildren); 
+                $parent = $allChildren->findBy('category_id',$content['parent_id']) ?? $categoriesPage;
+                // dump($parent);
+                // dump($content['parent_id']);
+                // dump($content);
                 $page = null;
-
                 try {
 
                     if ( $page = $allChildren->findBy('category_id',$content['category_id']) ) {
+                        echo 'update';
                         $page->update($content);
-                        $newSlug = Str::slug($content['custom_url']['url']);
+                        $newSlug = $content['slug'];
                         $oldSlug = $page->slug();
 
                         if($newSlug != $oldSlug) {
                             $page->changeSlug($newSlug);
                         }
+
                     } else {
-                        $page = $categoriesPage->createChild([
+                        echo 'create';
+                        
+                        // dump($content);
+                        $page = $parent->createChild([
                           'content'  => $content,
-                          'slug' => $content['custom_url']['url'],
+                          'slug' => $content['slug'],
                           'isDraft'  => false,
-                          'template' => 'category'
+                          'template' => 'categories'
                         ]);
+
                     }
 
-                    //now that we have a page set the visibility to match bigcommerce
+                    // //now that we have a page set the visibility to match bigcommerce
                     $newStatus = (bool) $content['is_visible'] ? 'listed': 'draft' ;
                     $oldStatus = $page->status(); 
                     if($newStatus != $oldStatus) {
@@ -96,7 +127,7 @@ Kirby::plugin('apecave/kirbycommerce', [
                     }
 
                 }   catch(Exception $e) {
-
+                    echo $e->getMessage();
                     $ravenClient->captureException($e);
                   
                 }  
@@ -105,4 +136,20 @@ Kirby::plugin('apecave/kirbycommerce', [
 
 ]);
 
+ //only have to get drafts recursively
+            function recursive($drafts) {
+                
+                foreach($drafts as $key => $page) {
 
+                        $newItems = $page->index();
+                        $newItems = $newItems->merge($page->drafts());
+                        $newItems = recursive($newItems); 
+
+                        $drafts = $drafts->merge($page->drafts());
+                        $drafts = $drafts->merge($page->index());
+
+                        $drafts = $drafts->merge($newItems );
+      
+                }
+                return $drafts;
+            }
