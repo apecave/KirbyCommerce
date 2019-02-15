@@ -4,7 +4,7 @@ use ApeCave\KirbyCommerce\Categories;
 
 return [
     [
-        'pattern' => 'api/deepindex',
+        'pattern' => 'deepindex',
         'action'  => function () {
             // $trueIndex = page('categories/accessories')->drafts()->drafts()->index();
             $trueIndex = page('categories')->trueIndex();
@@ -14,7 +14,7 @@ return [
         }
     ],
     [
-        'pattern' => 'api/products',
+        'pattern' => 'products',
         'action'  => function () {
             header( 'Transfer-Encoding: chunked; Content-type: text/html; charset=utf-8' );
             echo "<style>html {white-space:pre}</style>\r\n";
@@ -52,7 +52,7 @@ return [
         }
     ],
     [
-        'pattern' => 'api/categories',
+        'pattern' => 'categories',
         'action'  => function () {
             header( 'Transfer-Encoding: chunked; Content-type: text/html; charset=utf-8' );
             echo "<style>html {white-space:pre}</style>\r\n";
@@ -99,6 +99,17 @@ return [
         }
     ]
 ];
+
+// return [
+//       [
+//         'pattern' => 'my-endpoint',
+//         'action'  => function () {
+//           return [
+//             'hello' => 'world'
+//           ];
+//         }
+//       ]
+// ];
 
 
 function buildTree($items) {

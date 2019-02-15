@@ -4,7 +4,8 @@ panel.plugin('apecave/kirbycommerce', {
       props: {
         message: String,
         progress: Number,
-        disabled: Boolean
+        disabled: Boolean,
+        crsf: String,
       },
       data: function () {
         return {
@@ -16,8 +17,9 @@ panel.plugin('apecave/kirbycommerce', {
       sync: function () {
         var self = this;
         self.disabled = true;
-        var xhr = new XMLHttpRequest()
-        xhr.open("GET", "/api/products", true)
+        var xhr = new XMLHttpRequest();
+        xhr.open("GET", "/api/products", true);
+        xhr.setRequestHeader( "X-CSRF" , self.crsf );
 
 
         xhr.onprogress = function () {

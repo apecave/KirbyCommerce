@@ -6,7 +6,7 @@ Kirby::plugin('apecave/kirbycommerce', [
     'blueprints' => [
         'pages/products' => __DIR__ . '/blueprints/pages/products.yml',
     ],
-    'routes' => require_once __DIR__ . '/routes.php',
+    'api' => [ 'routes' => require_once __DIR__ . '/routes.php' ] ,
     'fields' => [
       'products-sync' => [
         'props' => [
@@ -15,6 +15,9 @@ Kirby::plugin('apecave/kirbycommerce', [
             },
             'disabled' => function (bool $disabled = false) {
                 return $disabled;
+            },
+            'crsf' => function () {
+                return csrf();
             },
         ],
         'computed' => [
